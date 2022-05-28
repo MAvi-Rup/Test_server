@@ -60,7 +60,7 @@ async function run() {
     });
 
     //post tools
-    app.post('/tools', verifyJwt,verifyAdmin, async (req, res) => {
+    app.post('/tools', verifyJwt, verifyAdmin, async (req, res) => {
       const tools = req.body;
       const result = await toolCollection.insertOne(tools);
       res.send(result);
@@ -120,6 +120,23 @@ async function run() {
       const users = await userCollection.find().toArray();
       res.send(users);
     });
+
+    //update user
+    app.put('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const updatedUser = req.body;
+      const filter = { email: email }
+      const options = { upsert: true }
+      const updateUser = {
+        $set: {
+          disPlayName: updatedUser.name,
+          address: updatedUser.address,
+          number: updatedUser.number
+        }
+      }
+      const result = await userCollection.updateOne(filter,updateUser,options)
+      res.send(result)
+    })
 
 
 
