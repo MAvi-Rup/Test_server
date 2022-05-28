@@ -39,6 +39,7 @@ async function run() {
     const orderCollection = client.db('ceramic-tiles').collection('order');
     const reviewCollection = client.db('ceramic-tiles').collection('review');
     const userCollection = client.db('ceramic-tiles').collection('user');
+    const confirmCollection = client.db('ceramic-tiles').collection('confirmOrder');
 
 
     //admin function
@@ -59,6 +60,13 @@ async function run() {
       res.send(tools);
     });
 
+    app.delete('/tools/:id',verifyJwt, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await toolCollection.deleteOne(query)
+      res.send(result)
+  })
+
     //post tools
     app.post('/tools', verifyJwt, verifyAdmin, async (req, res) => {
       const tools = req.body;
@@ -76,11 +84,27 @@ async function run() {
     })
 
 
+    app.delete('/order/:id',verifyJwt, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query)
+      res.send(result)
+  })
+
+
+
+
 
     //insert order
     app.post('/order', async (req, res) => {
       const orderObject = req.body;
       const order = await orderCollection.insertOne(orderObject);
+      return res.send(order);
+    });
+
+    app.post('/confirm', async (req, res) => {
+      const orderObject = req.body;
+      const order = await confirmCollection.insertOne(orderObject);
       return res.send(order);
     });
 
