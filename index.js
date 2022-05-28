@@ -108,6 +108,11 @@ async function run() {
       return res.send(order);
     });
 
+    app.get('/confirm',verifyJwt,verifyAdmin, async (req, res) => {
+      const orders = await confirmCollection.find().toArray();
+      res.send(orders);
+    });
+
     app.get('/order', verifyJwt, async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
