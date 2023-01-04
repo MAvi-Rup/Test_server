@@ -6,12 +6,21 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 5000;
-
+const accessToken = 'uaidaidnaiducnai233rbdjfbsu'
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qxw6j.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qxw6j.mongodb.net/?retryWrites=true&w=majority`;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // Verify JWT Function
 
@@ -21,7 +30,7 @@ function verifyJwt(req, res, next) {
     return res.status(401).send({ message: 'UnAuthorized access' });
   }
   const token = authHeader.split(' ')[1];
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+  jwt.verify(token, accessToken, function (err, decoded) {
     if (err) {
       return res.status(403).send({ message: 'Forbidden access' })
     }
@@ -32,9 +41,23 @@ function verifyJwt(req, res, next) {
 
 
 
-async function run() {
-  try {
-    await client.connect();
+var client = MongoClient.connect(
+'mongodb://myData:admin123@migrationdb.cluster-cfch1redbtfq.us-east-1.docdb.amazonaws.com:27017/ceramic-tiles?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false',
+{
+  tlsCAFile: `rds-combined-ca-bundle.pem` //Specify the DocDB; cert
+},
+function(err, client) {
+    if(err)
+        throw err;
+        
+    app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
     const toolCollection = client.db('ceramic-tiles').collection('tools');
     const orderCollection = client.db('ceramic-tiles').collection('order');
     const reviewCollection = client.db('ceramic-tiles').collection('review');
@@ -53,6 +76,7 @@ async function run() {
         res.status(403).send({ message: 'forbidden' });
       }
     }
+    
 
     //get all tools
     app.get('/tools', async (req, res) => {
@@ -189,16 +213,44 @@ async function run() {
       res.send({ admin: isAdmin })
     })
 
+    //Specify the database to be used
+    // db = client.db('sample-database');
+
+    // //Specify the collection to be used
+    // col = db.collection('sample-collection');
+
+    // //Insert a single document
+    // col.insertOne({'hello':'Amazon DocumentDB'}, function(err, result){
+    //   //Find the document that was previously written
+    //   col.findOne({'hello':'DocDB;'}, function(err, result){
+    //     //Print the result to the screen
+    //     console.log(result);
+
+    //     //Close the connection
+    //     client.close()
+});
 
 
 
-  }
-  finally {
 
-  }
-}
 
-run().catch(console.dir);
+
+
+// async function run() {
+//   try {
+//     await client.connect();
+    
+
+
+
+
+//   }
+//   finally {
+
+//   }
+// }
+
+// run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
