@@ -42,7 +42,7 @@ function verifyJwt(req, res, next) {
 
 
 var client = MongoClient.connect(
-'mongodb://myData:admin123@migrationdb.cluster-cfch1redbtfq.us-east-1.docdb.amazonaws.com:27017/ceramic-tiles?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false',
+'mongodb://myDB:admin123@docdb-2023-01-05-06-26-20.cluster-cmmlk0hksdsb.us-west-2.docdb.amazonaws.com:27017/ceramic-tiles?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false',
 {
   tlsCAFile: `rds-combined-ca-bundle.pem` //Specify the DocDB; cert
 },
